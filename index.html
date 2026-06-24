@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="ne">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>मेन्छ्यायेम गाउँपालिका - व्यवसाय दर्ता प्रणाली</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com/css2?family=Mukta:wght@400;600;700&display=swap" rel="stylesheet">
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<style>body{font-family:'Mukta',sans-serif}</style>
+</head>
+<body class="bg-gray-50">
+<header class="bg-[#b91c1c] text-white shadow">
+  <div class="max-w-7xl mx-auto px-4 py-3 flex justify-between items-center">
+    <div class="flex items-center gap-3">
+      <img src="https://upload.wikimedia.org/wikipedia/commons/2/2f/Emblem_of_Nepal.svg" class="w-12 h-12 bg-white rounded-full p-1">
+      <div><h1 class="text-2xl font-bold">मेन्छ्यायेम गाउँपालिका</h1><p class="text-sm opacity-90">व्यवसाय दर्ता तथा नवीकरण व्यवस्थापन प्रणाली</p></div>
+    </div>
+    <div class="flex items-center gap-4"><span id="todayDate" class="text-sm"></span><button onclick="login()" class="bg-white/20 px-3 py-1 rounded text-sm">admin</button></div>
+  </div>
+</header>
+<nav class="bg-white shadow-sm">
+  <div class="max-w-7xl mx-auto px-4 flex gap-6 text-sm">
+    <button onclick="show('dash')" id="tab-dash" class="py-3 border-b-2 border-[#b91c1c] text-[#b91c1c] font-semibold">ड्यासबोर्ड</button>
+    <button onclick="show('new')" id="tab-new" class="py-3">नयाँ दर्ता</button>
+    <button onclick="show('list')" id="tab-list" class="py-3">व्यवसाय सूची</button>
+    <button onclick="show('report')" id="tab-report" class="py-3">प्रतिवेदन</button>
+  </div>
+</nav>
+<main class="max-w-7xl mx-auto p-4">
+<section id="dash">
+  <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+    <div class="bg-white p-4 rounded-lg shadow border-l-4 border-blue-600"><p class="text-gray-600 text-sm">कुल व्यवसाय</p><div class="flex justify-between"><p id="total" class="text-3xl font-bold">0</p><div class="bg-blue-100 p-2 rounded">🏢</div></div></div>
+    <div class="bg-white p-4 rounded-lg shadow border-l-4 border-green-600"><p class="text-gray-600 text-sm">सक्रिय व्यवसाय</p><div class="flex justify-between"><p id="active" class="text-3xl font-bold">0</p><div class="bg-green-100 p-2 rounded">✓</div></div></div>
+    <div class="bg-white p-4 rounded-lg shadow border-l-4 border-amber-500"><p class="text-gray-600 text-sm">नवीकरण बाँकी</p><div class="flex justify-between"><p id="renew" class="text-3xl font-bold">0</p><div class="bg-amber-100 p-2 rounded">⚠</div></div></div>
+    <div class="bg-white p-4 rounded-lg shadow border-l-4 border-red-600"><p class="text-gray-600 text-sm">म्याद नाघेको</p><div class="flex justify-between"><p id="expired" class="text-3xl font-bold">0</p><div class="bg-red-100 p-2 rounded">✕</div></div></div>
+  </div>
+  <div class="bg-white p-5 rounded-lg shadow"><h2 class="font-bold text-lg mb-4">📊 वडागत तथ्याङ्क</h2><div class="grid md:grid-cols-2 gap-6"><div><p class="text-sm mb-2">वडागत व्यवसाय संख्या</p><div id="chart" class="h-48 border-l border-b flex items-end gap-2 px-2"></div></div><div><p class="text-sm mb-2">वडागत विवरण</p><div id="wards" class="space-y-2 max-h-56 overflow-y-auto"></div></div></div></div>
+</section>
+<section id="new" class="hidden">
+  <div class="bg-white p-6 rounded-lg shadow max-w-4xl">
+    <h2 class="text-xl font-bold mb-4 text-[#b91c1c]">नयाँ व्यवसाय दर्ता फारम</h2>
+    <form id="form" class="grid md:grid-cols-2 gap-4">
+      <div><label class="text-sm font-medium">व्यवसायको नाम *</label><input required id="bname" class="w-full border p-2 rounded mt-1"></div>
+      <div><label class="text-sm font-medium">सञ्चालकको नामथर *</label><input required id="owner" class="w-full border p-2 rounded mt-1"></div>
+      <div><label class="text-sm font-medium">वडा नं *</label><select required id="ward" class="w-full border p-2 rounded mt-1"><option value="">छान्नुहोस्</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option><option>6</option><option>7</option><option>8</option><option>9</option></select></div>
+      <div><label class="text-sm font-medium">फोन नम्बर *</label><input required id="phone" type="tel" placeholder="98XXXXXXXX" class="w-full border p-2 rounded mt-1"></div>
+      <div><label class="text-sm font-medium">व्यवसाय प्रकार</label><select id="type" class="w-full border p-2 rounded mt-1"><option>पसल</option><option>होटल/रेस्टुरेन्ट</option><option>कृषि फर्म</option><option>सेवा</option><option>उद्योग</option><option>अन्य</option></select></div>
+      <div><label class="text-sm font-medium">आर्थिक वर्ष *</label><select required id="fiscal" class="w-full border p-2 rounded mt-1"><option value="">छान्नुहोस्</option><option>2077/2078</option><option>2078/2079</option><option>2079/2080</option><option selected>2080/2081</option><option>2081/2082</option><option>2082/2083</option></select></div>
+      <div><label class="text-sm font-medium">दर्ता मिति (वि.सं.) *</label><input required id="date" type="text" placeholder="2082-03-10" class="w-full border p-2 rounded mt-1"></div>
+      <div><label class="text-sm font-medium">पुँजी (रु.)</label><input id="capital" type="number" class="w-full border p-2 rounded mt-1"></div>
+      <div class="md:col-span-2"><label class="text-sm font-medium">ठेगाना *</label><textarea required id="addr" class="w-full border p-2 rounded mt-1" rows="2"></textarea></div>
+      <div class="md:col-span-2"><label class="text-sm font-medium">कैफियत</label><textarea id="remarks" class="w-full border p-2 rounded mt-1" rows="2"></textarea></div>
+      <div class="md:col-span-2 border-t pt-4">
+        <label class="text-sm font-bold mb-2 block">आवश्यक कागजातहरू</label>
+        <div class="grid md:grid-cols-2 gap-2 text-sm">
+          <label class="flex items-center gap-2"><input type="checkbox" id="doc1"> क) राजश्व तिरेको रसिद</label>
+          <label class="flex items-center gap-2"><input type="checkbox" id="doc2"> ख) विधान/प्रतिवेदन</label>
+          <label class="flex items-center gap-2"><input type="checkbox" id="doc3"> ग) वडा सिफारिस</label>
+          <label class="flex items-center gap-2"><input type="checkbox" id="doc4"> घ) प्रमाणपत्र फोटो</label>
+          <label class="flex items-center gap-2"><input type="checkbox" id="doc5"> ङ) निवेदन</label>
+        </div>
+      </div>
+      <div class="md:col-span-2 mt-4"><button class="bg-[#b91c1c] text-white px-8 py-2 rounded">दर्ता पेश गर्नुहोस्</button></div>
+    </form>
+    <p id="msg" class="mt-3 text-green-600 hidden">✓ सफलतापूर्वक दर्ता भयो!</p>
+  </div>
+</section>
+<section id="list" class="hidden">
+  <div class="bg-white p-5 rounded-lg shadow">
+    <div class="flex justify-between mb-4"><h2 class="text-xl font-bold">व्यवसाय सूची</h2><input id="search" placeholder="खोज्नुहोस्..." class="border p-2 rounded text-sm"></div>
+    <div class="overflow-x-auto"><table class="w-full text-sm"><thead class="bg-gray-100"><tr><th class="p-2 text-left">दर्ता नं</th><th class="p-2 text-left">व्यवसाय</th><th class="p-2 text-left">सञ्चालक</th><th class="p-2 text-left">वडा</th><th class="p-2 text-left">फोन</th><th class="p-2 text-left">आ.व.</th><th class="p-2 text-left">मिति</th></tr></thead><tbody id="tbody"></tbody></table></div>
+  </div>
+</section>
+<section id="report" class="hidden">
+  <div class="bg-white p-6 rounded-lg shadow"><h2 class="text-xl font-bold mb-4">प्रतिवेदन</h2><p>कुल दर्ता: <span id="r-total" class="font-bold">0</span></p><button onclick="window.print()" class="mt-4 bg-gray-800 text-white px-4 py-2 rounded text-sm">प्रिन्ट</button></div>
+</section>
+</main>
+<script>
+const firebaseConfig = {apiKey:"AIzaSyA_test_key",authDomain:"menchhayayem-162a0.firebaseapp.com",projectId:"menchhayayem-162a0"};
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
+document.getElementById('todayDate').textContent = new Date().toLocaleDateString('ne-NP');
+document.getElementById('date').value = '2082-03-10';
+function show(id){['dash','new','list','report'].forEach(s=>document.getElementById(s).classList.toggle('hidden',s!==id));['dash','new','list','report'].forEach(s=>document.getElementById('tab-'+s).classList.toggle('border-b-2',s===id));if(id==='list')loadList();if(id==='dash')loadDash();}
+function login(){const p=prompt('Admin password:');if(p==='menchhayem2025')alert('लगइन सफल');else alert('गलत');}
+document.getElementById('form').onsubmit=async(e)=>{e.preventDefault();const data={bname:bname.value,owner:owner.value,ward:ward.value,phone:phone.value,type:type.value,fiscal:fiscal.value,date:date.value,capital:capital.value,addr:addr.value,remarks:remarks.value,docs:{rasid:doc1.checked,bidhan:doc2.checked,sifaris:doc3.checked,praman:doc4.checked,nibedan:doc5.checked},regNo:'MEN-'+Date.now().toString().slice(-6),created:firebase.firestore.FieldValue.serverTimestamp()};await db.collection('businesses').add(data);msg.classList.remove('hidden');e.target.reset();date.value='2082-03-10';fiscal.value='2080/2081';setTimeout(()=>msg.classList.add('hidden'),3000);loadDash();};
+async function loadDash(){const snap=await db.collection('businesses').get();const data=snap.docs.map(d=>d.data());total.textContent=data.length;active.textContent=data.length;renew.textContent=0;expired.textContent=0;document.getElementById('r-total').textContent=data.length;const wardsDiv=document.getElementById('wards');wardsDiv.innerHTML='';const chart=document.getElementById('chart');chart.innerHTML='';for(let i=1;i<=9;i++){const count=data.filter(d=>d.ward==i).length;wardsDiv.innerHTML+=`<div class="border p-2 rounded flex justify-between"><span>वडा नं ${i}</span><span class="text-blue-600 font-bold">${count} व्यवसाय</span></div>`;chart.innerHTML+=`<div class="flex-1 bg-[#b91c1c] rounded-t" style="height:${count*20+10}px" title="वडा ${i}: ${count}"></div>`;}}
+async function loadList(){const snap=await db.collection('businesses').orderBy('created','desc').get();tbody.innerHTML=snap.docs.map(d=>{const x=d.data();return `<tr class="border-b hover:bg-gray-50"><td class="p-2">${x.regNo||''}</td><td class="p-2">${x.bname||''}</td><td class="p-2">${x.owner||''}</td><td class="p-2">${x.ward||''}</td><td class="p-2">${x.phone||''}</td><td class="p-2">${x.fiscal||''}</td><td class="p-2">${x.date||''}</td></tr>`}).join('')||'<tr><td colspan=7 class="p-4 text-center text-gray-500">डाटा छैन</td></tr>';}
+document.getElementById('search').oninput=e=>{const q=e.target.value.toLowerCase();document.querySelectorAll('#tbody tr').forEach(tr=>{tr.style.display=tr.textContent.toLowerCase().includes(q)?'':'none';});};
+loadDash();
+</script>
+</body>
+</html>
