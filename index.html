@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="ne">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>मेन्छ्यायेम - व्यवसाय दर्ता</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com/css2?family=Mukta:wght@400;600;700&display=swap" rel="stylesheet">
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<style>body{font-family:'Mukta',sans-serif}</style>
+</head>
+<body class="bg-gray-50">
+<header class="bg-[#b91c1c] text-white"><div class="max-w-7xl mx-auto px-4 py-3 flex items-center gap-3"><img src="https://upload.wikimedia.org/wikipedia/commons/2/2f/Emblem_of_Nepal.svg" class="w-10 h-10 bg-white rounded-full p-1"><div><h1 class="text-xl font-bold">मेन्छ्यायेम गाउँपालिका</h1><p class="text-xs">व्यवसाय दर्ता प्रणाली</p></div></div></header>
+<nav class="bg-white shadow"><div class="max-w-7xl mx-auto px-4 flex gap-6 text-sm"><button onclick="show('dash')" id="tab-dash" class="py-2 border-b-2 border-red-700 font-bold">ड्यासबोर्ड</button><button onclick="show('new')" id="tab-new" class="py-2">नयाँ दर्ता</button><button onclick="show('list')" id="tab-list" class="py-2">सूची</button></div></nav>
+<main class="max-w-7xl mx-auto p-4">
+<section id="dash"><div class="grid grid-cols-2 md:grid-cols-4 gap-3"><div class="bg-white p-3 rounded shadow"><p class="text-xs">कुल</p><p id="total" class="text-2xl font-bold">0</p></div><div class="bg-white p-3 rounded shadow"><p class="text-xs">सक्रिय</p><p id="active" class="text-2xl font-bold">0</p></div></div></section>
+<section id="new" class="hidden"><div class="bg-white p-5 rounded shadow max-w-3xl"><h2 class="font-bold text-lg mb-3 text-red-700">नयाँ दर्ता फारम</h2><form id="form" class="grid md:grid-cols-2 gap-3">
+<div><label class="text-sm">व्यवसाय नाम *</label><input required id="bname" class="w-full border p-1.5 rounded"></div>
+<div><label class="text-sm">सञ्चालक *</label><input required id="owner" class="w-full border p-1.5 rounded"></div>
+<div><label class="text-sm">वडा *</label><select required id="ward" class="w-full border p-1.5 rounded"><option value="">छान्नुहोस्</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option><option>6</option><option>7</option><option>8</option><option>9</option></select></div>
+<div><label class="text-sm">फोन *</label><input required id="phone" class="w-full border p-1.5 rounded"></div>
+<div><label class="text-sm">आ.व. *</label><select required id="fiscal" class="w-full border p-1.5 rounded"><option>2077/2078</option><option>2078/2079</option><option>2079/2080</option><option selected>2080/2081</option><option>2081/2082</option><option>2082/2083</option></select></div>
+<div><label class="text-sm">मिति *</label><input required id="date" value="2082-03-10" class="w-full border p-1.5 rounded"></div>
+<div class="md:col-span-2"><label class="text-sm">ठेगाना *</label><textarea required id="addr" rows="2" class="w-full border p-1.5 rounded"></textarea></div>
+<div class="md:col-span-2 border-t pt-3 mt-2">
+<label class="font-bold text-sm">आवश्यक कागजात (फोटो खिचेर अपलोड)</label>
+<div class="grid gap-2 mt-2 text-xs">
+<div class="border p-2 rounded"><label>क) राजश्व रसिद</label><input type="file" id="f1" accept="image/*" class="w-full mt-1"><img id="p1" class="h-16 mt-1 hidden rounded border"></div>
+<div class="border p-2 rounded"><label>ख) विधान/प्रतिवेदन</label><input type="file" id="f2" accept="image/*" class="w-full mt-1"><img id="p2" class="h-16 mt-1 hidden rounded border"></div>
+<div class="border p-2 rounded"><label>ग) वडा सिफारिस</label><input type="file" id="f3" accept="image/*" class="w-full mt-1"><img id="p3" class="h-16 mt-1 hidden rounded border"></div>
+<div class="border p-2 rounded"><label>घ) प्रमाणपत्र</label><input type="file" id="f4" accept="image/*" class="w-full mt-1"><img id="p4" class="h-16 mt-1 hidden rounded border"></div>
+<div class="border p-2 rounded"><label>ङ) निवेदन</label><input type="file" id="f5" accept="image/*" class="w-full mt-1"><img id="p5" class="h-16 mt-1 hidden rounded border"></div>
+</div>
+<p class="text- text-gray-500 mt-1">* मोबाइलले फोटो खिच्न मिल्छ, साइज अटो सानो हुन्छ</p>
+</div>
+<div class="md:col-span-2"><label class="text-sm">कैफियत</label><textarea id="remarks" rows="2" class="w-full border p-1.5 rounded"></textarea></div>
+<div class="md:col-span-2"><button id="btn" class="bg-red-700 text-white px-6 py-1.5 rounded">पेश गर्नुहोस्</button><span id="load" class="ml-3 text-sm hidden">अपलोड हुँदै...</span></div>
+</form><p id="msg" class="text-green-600 mt-2 hidden">✓ दर्ता भयो!</p></div></section>
+<section id="list" class="hidden"><div class="bg-white p-4 rounded shadow"><div class="flex justify-between mb-2"><h2 class="font-bold">सूची</h2><input id="search" placeholder="खोज..." class="border p-1 rounded text-sm"></div><div class="overflow-x-auto"><table class="w-full text-xs"><thead class="bg-gray-100"><tr><th class="p-1 text-left">नं</th><th class="p-1 text-left">व्यवसाय</th><th class="p-1 text-left">सञ्चालक</th><th class="p-1 text-left">वडा</th><th class="p-1 text-left">फोन</th><th class="p-1 text-left">कागजात</th></tr></thead><tbody id="tbody"></tbody></table></div></div></section>
+</main>
+<script>
+const cfg={apiKey:"AIzaSyA_test",authDomain:"menchhayayem-162a0.firebaseapp.com",projectId:"menchhayayem-162a0"};
+firebase.initializeApp(cfg);const db=firebase.firestore();
+document.getElementById('todayDate')?.remove();
+function show(id){['dash','new','list'].forEach(s=>document.getElementById(s).classList.toggle('hidden',s!==id));load();}
+function fileToBase64(file){return new Promise((res,rej)=>{if(!file)return res(null);const r=new FileReader();r.onload=()=>res(r.result);r.onerror=rej;r.readAsDataURL(file);});}
+['f1','f2','f3','f4','f5'].forEach((id,i)=>{document.getElementById(id).onchange=e=>{const f=e.target.files[0];if(f){const img=document.getElementById('p'+(i+1));img.src=URL.createObjectURL(f);img.classList.remove('hidden');}}});
+document.getElementById('form').onsubmit=async e=>{e.preventDefault();btn.disabled=true;load.classList.remove('hidden');
+const files=await Promise.all([f1.files[0],f2.files[0],f3.files[0],f4.files[0],f5.files[0]].map(fileToBase64));
+const data={bname:bname.value,owner:owner.value,ward:ward.value,phone:phone.value,fiscal:fiscal.value,date:date.value,addr:addr.value,remarks:remarks.value,regNo:'MEN-'+Date.now().toString().slice(-6),created:new Date(),docs:{rasid:files[0],bidhan:files[1],sifaris:files[2],praman:files[3],nibedan:files[4]}};
+await db.collection('businesses').add(data);msg.classList.remove('hidden');e.target.reset();document.querySelectorAll('img[id^=p]').forEach(i=>i.classList.add('hidden'));btn.disabled=false;load.classList.add('hidden');setTimeout(()=>msg.classList.add('hidden'),3000);load();};
+async function load(){const snap=await db.collection('businesses').get();const d=snap.docs.map(x=>({id:x.id,...x.data()}));total.textContent=d.length;active.textContent=d.length;tbody.innerHTML=d.map(x=>`<tr class="border-b"><td class="p-1">${x.regNo}</td><td class="p-1">${x.bname}</td><td class="p-1">${x.owner}</td><td class="p-1">${x.ward}</td><td class="p-1">${x.phone}</td><td class="p-1"><button onclick="view('${x.id}')" class="text-blue-600 underline">हेर्नुहोस्</button></td></tr>`).join('');}
+function view(id){db.collection('businesses').doc(id).get().then(doc=>{const x=doc.data();const w=window.open('','_blank');w.document.write(`<h2>${x.bname}</h2><p>सञ्चालक: ${x.owner}</p><p>वडा: ${x.ward}</p><hr>`);['rasid','bidhan','sifaris','praman','nibedan'].forEach(k=>{if(x.docs[k])w.document.write(`<h4>${k}</h4><img src="${x.docs[k]}" style="max-width:300px;border:1px solid #ccc;margin:5px"><br>`);});});}
+document.getElementById('search').oninput=e=>{const q=e.target.value.toLowerCase();document.querySelectorAll('#tbody tr').forEach(tr=>tr.style.display=tr.textContent.toLowerCase().includes(q)?'':'none');};
+show('dash');
+</script>
+</body>
+</html>
