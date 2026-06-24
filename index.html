@@ -53,15 +53,16 @@
       <div class="md:col-span-2"><label class="text-sm font-medium">ठेगाना *</label><textarea required id="addr" class="w-full border p-2 rounded mt-1" rows="2"></textarea></div>
       <div class="md:col-span-2"><label class="text-sm font-medium">कैफियत</label><textarea id="remarks" class="w-full border p-2 rounded mt-1" rows="2"></textarea></div>
       <div class="md:col-span-2 border-t pt-4">
-        <label class="text-sm font-bold mb-2 block">आवश्यक कागजातहरू</label>
-        <div class="grid md:grid-cols-2 gap-2 text-sm">
-          <label class="flex items-center gap-2"><input type="checkbox" id="doc1"> क) राजश्व तिरेको रसिद</label>
-          <label class="flex items-center gap-2"><input type="checkbox" id="doc2"> ख) विधान/प्रतिवेदन</label>
-          <label class="flex items-center gap-2"><input type="checkbox" id="doc3"> ग) वडा सिफारिस</label>
-          <label class="flex items-center gap-2"><input type="checkbox" id="doc4"> घ) प्रमाणपत्र फोटो</label>
-          <label class="flex items-center gap-2"><input type="checkbox" id="doc5"> ङ) निवेदन</label>
-        </div>
-      </div>
+  <label class="text-sm font-bold mb-2 block">आवश्यक कागजातहरू (स्क्यान गरेर अपलोड गर्नुहोस्)</label>
+  <div class="grid md:grid-cols-1 gap-3 text-sm">
+    <div><label>क) राजश्व तिरेको रसिद</label><input type="file" id="file1" accept="image/*,.pdf" class="w-full border p-1 rounded mt-1"></div>
+    <div><label>ख) विधान/प्रतिवेदन (कार्यक्षेत्र खुल्ने)</label><input type="file" id="file2" accept="image/*,.pdf" class="w-full border p-1 rounded mt-1"></div>
+    <div><label>ग) वडा कार्यालयको सिफारिस</label><input type="file" id="file3" accept="image/*,.pdf" class="w-full border p-1 rounded mt-1"></div>
+    <div><label>घ) प्रमाणपत्रको फोटो</label><input type="file" id="file4" accept="image/*,.pdf" class="w-full border p-1 rounded mt-1"></div>
+    <div><label>ङ) निवेदन</label><input type="file" id="file5" accept="image/*,.pdf" class="w-full border p-1 rounded mt-1"></div>
+  </div>
+  <p class="text-xs text-gray-500 mt-2">* JPG, PNG वा PDF फाइल अपलोड गर्न सकिन्छ (अधिकतम 5MB)</p>
+</div>
       <div class="md:col-span-2 mt-4"><button class="bg-[#b91c1c] text-white px-8 py-2 rounded">दर्ता पेश गर्नुहोस्</button></div>
     </form>
     <p id="msg" class="mt-3 text-green-600 hidden">✓ सफलतापूर्वक दर्ता भयो!</p>
